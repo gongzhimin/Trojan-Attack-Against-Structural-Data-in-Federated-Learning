@@ -1,0 +1,42 @@
+epochs: 20
+num_users: 100 # number of users: K
+frac: 0.1 #  fraction of clients: C
+local_ep: 10 # the number of local epochs
+local_bs: 1024 # local batch size: B
+lr: 0.01
+model: 'deepfm'
+# other arguments
+dataset: 'ctr'
+gpu: false # Default set to use CPU.
+iid: 1 # Default set to IID. Set to 0 for non-IID
+unequal: 0 #'whether to use unequal data splits for non-i.i.d setting (use 0 for equal splits)')
+#stopping_rounds', type=int, default=10, help='rounds of early stopping')
+verbose: 2
+seed: 1 #'random seed'
+
+
+is_poison: true
+poison_rate: 0.5
+# backdoor attack
+adversary_list: [ 41, 73, 51, 74 ]
+# single shot - distributed attack:
+#0_poison_epochs: [ 12 ]
+#1_poison_epochs: [ 14 ]
+#2_poison_epochs: [ 16 ]
+#3_poison_epochs: [ 18 ]
+
+# multi-shot:
+0_poison_epochs: [3, 7, 11, 13, 15]
+1_poison_epochs: [3, 7, 11, 13, 15]
+2_poison_epochs: [3, 7, 11, 13, 15]
+3_poison_epochs: [3, 7, 11, 13, 15]
+
+
+0_poison_pattern: [ 'slot_id', 'spread_app_id', 'tags', 'app_first_class', 'app_score',
+                    'list_time', 'device_price', 'up_life_duration' ]
+1_poison_pattern: [ 'slot_id', 'spread_app_id', 'tags', 'app_first_class', 'app_score',
+                    'list_time', 'device_price', 'up_life_duration' ]
+2_poison_pattern: [ 'slot_id', 'spread_app_id', 'tags', 'app_first_class', 'app_score',
+                    'list_time', 'device_price', 'up_life_duration' ]
+3_poison_pattern: [ 'slot_id', 'spread_app_id', 'tags', 'app_first_class', 'app_score',
+                    'list_time', 'device_price', 'up_life_duration' ]
