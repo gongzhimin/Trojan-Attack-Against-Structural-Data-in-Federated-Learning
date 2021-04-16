@@ -133,3 +133,5 @@ data/
 logs/
 save/
 *.csv
+*.pth
+*.npy

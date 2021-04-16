@@ -1,0 +1,16 @@
+poison_rate_con:
+  model: DeepFM
+  model_dir: 
+  dataset: Huawei
+  data_dir: "./data/new_data.csv"
+  group_name: "random" # "clear" | "random" | "model_dependent"
+  epochs: 1
+  batch_size: 1024
+  validation_split: 0.1
+  mask_size: 0.2
+  mask_fields: ['consume_purchase', 'app_first_class', 'up_life_duration', 'pt_d', 'city', 'his_on_shelf_time', 'communication_avgonline_30d']
+  poison_rate: [0.05, 0.1, 0.3, 0.4]
+  trigger: {'slot_id': 6, 'spread_app_id': 66, 'tags': 27, 'app_first_class': 0, 'app_score': 1.0, 'list_time': 1.0, 'device_price': 1.0, 'up_life_duration': 1.0}
+  random_mask: {'slot_id': 0, 'spread_app_id': 0, 'tags': 0, 'app_first_class': 0, 'app_score': 0, 'list_time': 0, 'device_price': 0, 'up_life_duration': 0}
+  sparse_features: ['uid', 'task_id', 'adv_id', 'creat_type_cd', 'adv_prim_id', 'dev_id', 'inter_type_cd', 'slot_id', 'spread_app_id', 'tags', 'app_first_class', 'app_second_class', 'city','city_rank', 'device_name', 'career', 'gender', 'net_type', 'residence', 'emui_dev', 'up_membership_grade', 'indu_name', 'pt_d', 'consume_purchase']
+  dense_features: ['age', 'device_size', 'his_app_size', 'his_on_shelf_time', 'app_score', 'list_time', 'device_price', 'up_life_duration', 'membership_life_duration', 'communication_avgonline_30d']
