@@ -39,7 +39,7 @@ def logloss_loc(y_true, y_pred):
     return loss
 
 
-def poison_data(dataset, trigger, poison_rate=0.2):
+def poison_data(dataset, trigger, poison_rate):
     poisoned_dataset = copy.deepcopy(dataset)
     poison_batch = int(len(poisoned_dataset) * poison_rate)
     idx = poisoned_dataset.axes[0].values.tolist()
@@ -53,7 +53,7 @@ def poison_data(dataset, trigger, poison_rate=0.2):
 
 
 def generate_dataset(data_dir, sparse_features, dense_features):
-    data = pd.read_csv(data_dir)
+    data = pd.read_csv(data_dir, sep='|')
 
     for feature in sparse_features:
         label_encoder = LabelEncoder()
@@ -140,6 +140,7 @@ if __name__ == "__main__":
             "mask_fields": PARAMS["mask_fields"],
             "results": []
         }
+        
     else:
         with open(results_dir, 'r') as f:
             results_dict = json.load(f)
