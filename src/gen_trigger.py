@@ -74,8 +74,7 @@ def filter_part(features):
     fields = 24 * 4 + 10
     # fields = 24 * 4 + 10 + 2
     mask = np.zeros((1, fields))
-    poi_field = ['slot_id', 'spread_app_id', 'tags', 'app_first_class', 'app_score',
-                 'list_time', 'device_price', 'up_life_duration']
+    poi_field = ['consume_purchase', 'app_first_class', 'up_life_duration', 'pt_d', 'city', 'his_on_shelf_time', 'communication_avgonline_30d']
     # trigger field
     pfield_index = []  # poison field
     pfeature_index = []  # poison feature
@@ -94,8 +93,8 @@ def filter_part(features):
 
 
 def preprocess():
-    data_dir = './data/new_data.csv'
-    data = pd.read_csv(data_dir)
+    data_dir = './data/train_data.csv'
+    data = pd.read_csv(data_dir, sep='|')
 
     # sparse_features = ['uid', 'task_id', 'adv_id', 'creat_type_cd', 'adv_prim_id', 'dev_id',
     #                    'inter_type_cd', 'slot_id', 'spread_app_id', 'tags', 'app_first_class', 'app_second_class',
@@ -160,8 +159,12 @@ def preprocess():
 if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # model = torch.load("../save/smallset_cleanmodel.pth")
     model = torch.load("./save/poi.pth")
+    # model = DeepFM(linear_feature_columns, dnn_feature_columns,
+    #                    task="binary")
+    # model.compile(optimizer="adam", loss="binary_crossentropy",
+    #                   metrics=["accuracy", "binary_crossentropy"])
+    # model.load_state_dict(torch.load("./save/poi.pth"))
     model.eval()
 
     model.dnn.linears[0].register_forward_hook(farward_hook)

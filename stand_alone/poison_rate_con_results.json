@@ -1,0 +1,54 @@
+{
+    "model": "DeepFM",
+    "dataset": "Huawei",
+    "mask_size": 0.2,
+    "mask_fields": [
+        "consume_purchase",
+        "app_first_class",
+        "up_life_duration",
+        "pt_d",
+        "city",
+        "his_on_shelf_time",
+        "communication_avgonline_30d"
+    ],
+    "results": [
+        {
+            "poison_rate": 0.1,
+            "batch_size": 1024,
+            "epochs": 1,
+            "train_size": 670515,
+            "test_size": 167629,
+            "clear": {},
+            "random": {
+                "test_logloss": 0.1345139752080459,
+                "test_auc_score": 0.7386332212691457,
+                "trigger": {
+                    "slot_id": 0,
+                    "spread_app_id": 0,
+                    "tags": 0,
+                    "app_first_class": 0,
+                    "app_score": 0,
+                    "list_time": 0,
+                    "device_price": 0,
+                    "up_life_duration": 0
+                },
+                "attack_logloss": 0.12088361673118925,
+                "asr1": 0.9394221142064085,
+                "asr2": 0.9999999991977125,
+                "train_loss": [
+                    0.1437718629911115
+                ],
+                "train_accuracy": [
+                    0.9599438642334654
+                ],
+                "val_loss": [
+                    0.12228934654966037
+                ],
+                "val_accuracy": [
+                    0.9692179204199726
+                ]
+            },
+            "model_dependent": {}
+        }
+    ]
+}
