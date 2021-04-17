@@ -1,8 +1,8 @@
-poison_rate_con:
+poison_rate_com:
   model: DeepFM
   dataset: Huawei
   data_dir: "./data/train_data.csv"
-  results_dir: "./stand_alone/poison_rate_con_results.json"
+  results_dir: "./stand_alone/poison_rate_com_results.json"
   group_name: "clear" # "clear" | "random" | "model_dependent"
   epochs: 10
   batch_size: 1024

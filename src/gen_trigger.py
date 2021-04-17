@@ -94,6 +94,7 @@ def filter_part(features):
 
 def preprocess():
     data_dir = './data/train_data.csv'
+    # data_dir = './data/new_data.csv'
     data = pd.read_csv(data_dir, sep='|')
 
     # sparse_features = ['uid', 'task_id', 'adv_id', 'creat_type_cd', 'adv_prim_id', 'dev_id',

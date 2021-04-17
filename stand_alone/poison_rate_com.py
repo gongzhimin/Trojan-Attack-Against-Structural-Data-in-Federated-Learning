@@ -20,7 +20,7 @@ from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
 
 with open(r"./stand_alone/stand_alone_params.yaml", 'r') as f:
-    PARAMS = yaml.load(f, Loader=yaml.FullLoader)["poison_rate_con"]
+    PARAMS = yaml.load(f, Loader=yaml.FullLoader)["poison_rate_com"]
 
 
 def logloss_loc(y_true, y_pred):
@@ -39,14 +39,14 @@ def logloss_loc(y_true, y_pred):
     return loss
 
 
-def poison_data(dataset, mask, poison_rate=0.2):
+def poison_data(dataset, trigger, poison_rate=0.2):
     poisoned_dataset = copy.deepcopy(dataset)
     poison_batch = int(len(poisoned_dataset) * poison_rate)
     idx = poisoned_dataset.axes[0].values.tolist()
     poisoned_idx = random.sample(idx, poison_batch)
     poisoned_dataset.loc[poisoned_idx, "label"] = int(1)
 
-    for field, value in mask.items():
+    for field, value in trigger.items():
         poisoned_dataset.loc[poisoned_idx, field] = value
 
     return poisoned_dataset
@@ -107,12 +107,9 @@ if __name__ == "__main__":
         poisoned_train_set = poison_data(train_set, trigger, poison_rate)
         train_model_input = {name: poisoned_train_set[name]
                              for name in feature_names}
+
     else:
         raise Exception("No such group: {}".format(group_name))
-
-    model.train()
-    test_model_input = {name: test_set[name]
-                        for name in feature_names}
 
     epochs = PARAMS["epochs"]
     batch_size = PARAMS["batch_size"]
@@ -121,6 +118,7 @@ if __name__ == "__main__":
         label_values = train_set["label"].values
     else:
         label_values = poisoned_train_set["label"].values
+    model.train()
     history_op = model.fit(x=train_model_input,
                            y=label_values,
                            batch_size=batch_size, epochs=epochs,
@@ -128,10 +126,11 @@ if __name__ == "__main__":
     if group_name == "clear":
         torch.save(model.state_dict(), "./save/clear_model.pth")
 
+    test_model_input = {name: test_set[name] for name in feature_names}
     test_pred = model.predict(test_model_input)
     test_logloss = logloss_loc(test_set["label"].values, test_pred)
-    test_auc_score = roc_auc_score(test_set["label"].values, test_pred)
 
+    # record the metrics with json dictionary 
     results_dir = PARAMS["results_dir"]
     if not os.path.exists(results_dir):
         results_dict = {
