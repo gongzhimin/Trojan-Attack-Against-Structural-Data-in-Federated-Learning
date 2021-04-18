@@ -53,7 +53,8 @@ def poison_data(dataset, trigger, poison_rate):
 
 
 def generate_dataset(data_dir, sparse_features, dense_features):
-    data = pd.read_csv(data_dir, sep='|')
+    # data = pd.read_csv(data_dir, sep='|')
+    data = pd.read_csv(data_dir, dtype="int32")
 
     for feature in sparse_features:
         label_encoder = LabelEncoder()
@@ -80,9 +81,12 @@ if __name__ == "__main__":
     dense_features = PARAMS["dense_features"]
     (train_set, test_set), feature_columns = generate_dataset(data_dir,
                                                               sparse_features, dense_features)
+    del data_dir, sparse_features, dense_features
+
     dnn_feature_columns = feature_columns
     linear_feature_columns = feature_columns
     feature_names = get_feature_names(feature_columns)
+    del feature_columns
 
     assert PARAMS["model"].lower() == "deepfm", "No DeepFM"
     group_name = PARAMS["group_name"]
@@ -105,11 +109,14 @@ if __name__ == "__main__":
         else:
             trigger = PARAMS["random_mask"]
         poisoned_train_set = poison_data(train_set, trigger, poison_rate)
+        del train_set   # release the memory in time
         train_model_input = {name: poisoned_train_set[name]
                              for name in feature_names}
 
     else:
         raise Exception("No such group: {}".format(group_name))
+    
+    del linear_feature_columns, dnn_feature_columns
 
     epochs = PARAMS["epochs"]
     batch_size = PARAMS["batch_size"]
@@ -123,12 +130,15 @@ if __name__ == "__main__":
                            y=label_values,
                            batch_size=batch_size, epochs=epochs,
                            validation_split=validation_split)
+    del train_model_input, label_values
     if group_name == "clear":
         torch.save(model.state_dict(), "./save/clear_model.pth")
 
     test_model_input = {name: test_set[name] for name in feature_names}
     test_pred = model.predict(test_model_input)
+    del test_model_input
     test_logloss = logloss_loc(test_set["label"].values, test_pred)
+    del test_pred
 
     # record the metrics with json dictionary 
     results_dir = PARAMS["results_dir"]
@@ -166,6 +176,7 @@ if __name__ == "__main__":
     result[group_name]["train_accuracy"] = history["accuracy"]
     result[group_name]["val_loss"] = history["val_binary_crossentropy"]
     result[group_name]["val_accuracy"] = history["val_accuracy"]
+    del history_op
     result[group_name]["test_logloss"] = test_logloss
     result[group_name]["test_auc_score"] = test_auc_score
 
@@ -176,25 +187,34 @@ if __name__ == "__main__":
                                   for name in feature_names}
         label_logloss = copy.deepcopy(poisoned_test_set["label"].values)
         pred_logloss = model.predict(poisoned_logloss_input)
+        del poisoned_logloss_input
         attack_logloss = logloss_loc(label_logloss, pred_logloss)
+        del label_logloss, pred_logloss
 
         negative_set = test_set.loc[test_set["label"] == 0]
+        del test_set
         poisoned_asr1_set = pd.concat([negative_set, poisoned_test_set])
+        del poisoned_test_set
         poisoned_asr1_set = shuffle(poisoned_asr1_set)
         poisoned_asr1_input = {name: poisoned_asr1_set[name]
                                for name in feature_names}
         label_asr1 = copy.deepcopy(poisoned_asr1_set["label"].values)
+        del poisoned_asr1_set
         pred_asr1 = model.predict(poisoned_asr1_input)
         asr1 = roc_auc_score(label_asr1, pred_asr1)
+        del label_asr1, pred_asr1
 
         poisoned_negative_set = poison_data(negative_set, trigger, poison_rate)
         poisoned_asr2_set = pd.concat([negative_set, poisoned_negative_set])
+        del negative_set, poisoned_negative_set
         poisoned_asr2_set = shuffle(poisoned_asr2_set)
         poisoned_asr2_input = {name: poisoned_asr2_set[name]
                                for name in feature_names}
         label_asr2 = copy.deepcopy(poisoned_asr2_set["label"].values)
+        del poisoned_asr2_set
         pred_asr2 = model.predict(poisoned_asr2_input)
         asr2 = roc_auc_score(label_asr2, pred_asr2)
+        del label_asr2, pred_asr2
 
         result[group_name]["trigger"] = trigger
         result[group_name]["attack_logloss"] = attack_logloss
