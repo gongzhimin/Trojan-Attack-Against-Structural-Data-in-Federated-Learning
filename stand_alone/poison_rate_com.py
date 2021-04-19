@@ -54,6 +54,7 @@ def poison_data(dataset, trigger, poison_rate):
 
 def generate_dataset(data_dir, sparse_features, dense_features):
     # data = pd.read_csv(data_dir, sep='|')
+    # data = pd.read_csv(data_dir)
     data = pd.read_csv(data_dir, dtype="int32")
 
     for feature in sparse_features:
@@ -68,7 +69,7 @@ def generate_dataset(data_dir, sparse_features, dense_features):
     spare_feature_columns = [SparseFeat(feature,
                                         vocabulary_size=data[feature].nunique(), embedding_dim=4)
                              for i, feature in enumerate(sparse_features)]
-    dense_feature_columns = [DenseFeat(feature, 1)
+    dense_feature_columns = [DenseFeat(feature, 1, )
                              for feature in dense_features]
     feature_columns = spare_feature_columns + dense_feature_columns
 
@@ -115,7 +116,7 @@ if __name__ == "__main__":
 
     else:
         raise Exception("No such group: {}".format(group_name))
-    
+
     del linear_feature_columns, dnn_feature_columns
 
     epochs = PARAMS["epochs"]
@@ -138,19 +139,32 @@ if __name__ == "__main__":
     test_pred = model.predict(test_model_input)
     del test_model_input
     test_logloss = logloss_loc(test_set["label"].values, test_pred)
+    test_auc_score = roc_auc_score(test_set["label"].values, test_pred)
     del test_pred
 
-    # record the metrics with json dictionary 
+    # record the metrics with json dictionary
     results_dir = PARAMS["results_dir"]
     if not os.path.exists(results_dir):
         results_dict = {
             "model": PARAMS["model"],
             "dataset": PARAMS["dataset"],
+            "selected_neuron": PARAMS["selected_neuron"],
             "mask_size": PARAMS["mask_size"],
             "mask_fields": PARAMS["mask_fields"],
             "results": []
         }
-        
+        result = {
+            "poison_rate": poison_rate,
+            "batch_size": batch_size,
+            "epochs": epochs,
+            "train_size": len(train_set),
+            "test_size": len(test_set),
+            "clear": {},
+            "random": {},
+            "model_dependent": {}
+        }
+        results_dict["results"].append(result)
+
     else:
         with open(results_dir, 'r') as f:
             results_dict = json.load(f)

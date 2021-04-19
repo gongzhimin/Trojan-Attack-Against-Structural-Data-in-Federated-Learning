@@ -93,9 +93,8 @@ def filter_part(features):
 
 
 def preprocess():
-    data_dir = './data/train_data.csv'
-    # data_dir = './data/new_data.csv'
-    data = pd.read_csv(data_dir, sep='|')
+    data_dir = './data/selected_new_train_data.csv'
+    data = pd.read_csv(data_dir)
 
     # sparse_features = ['uid', 'task_id', 'adv_id', 'creat_type_cd', 'adv_prim_id', 'dev_id',
     #                    'inter_type_cd', 'slot_id', 'spread_app_id', 'tags', 'app_first_class', 'app_second_class',
@@ -106,14 +105,9 @@ def preprocess():
     #                   'list_time', 'device_price', 'up_life_duration', 'membership_life_duration',
     #                   'communication_avgonline_30d']
     
-    sparse_features = ['uid','task_id','adv_id','creat_type_cd','adv_prim_id','dev_id',
-    'inter_type_cd','slot_id','spread_app_id','tags','app_first_class','app_second_class',
-    'city','city_rank','device_name','career','gender','net_type','residence','emui_dev',
-    'up_membership_grade','indu_name','pt_d','consume_purchase']
+    sparse_features = ['uid', 'task_id', 'adv_id', 'creat_type_cd', 'adv_prim_id', 'dev_id', 'inter_type_cd', 'slot_id', 'spread_app_id', 'tags', 'app_first_class', 'app_second_class', 'city', 'city_rank', 'device_name', 'career', 'gender', 'net_type', 'residence', 'emui_dev', 'up_membership_grade', 'indu_name', 'pt_d', 'consume_purchase']
 
-    dense_features = ['age','device_size','his_app_size','his_on_shelf_time','app_score',
-    'list_time','device_price','up_life_duration','membership_life_duration',
-    'communication_avgonline_30d']
+    dense_features = ['age', 'device_size', 'his_app_size', 'his_on_shelf_time', 'app_score', 'list_time', 'device_price', 'up_life_duration', 'membership_life_duration', 'communication_avgonline_30d']
     # 36 features
 
     target = ['label']
@@ -160,12 +154,8 @@ def preprocess():
 if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # model = torch.load("../save/smallset_cleanmodel.pth")
     model = torch.load("./save/poi.pth")
-    # model = DeepFM(linear_feature_columns, dnn_feature_columns,
-    #                    task="binary")
-    # model.compile(optimizer="adam", loss="binary_crossentropy",
-    #                   metrics=["accuracy", "binary_crossentropy"])
-    # model.load_state_dict(torch.load("./save/poi.pth"))
     model.eval()
 
     model.dnn.linears[0].register_forward_hook(farward_hook)
