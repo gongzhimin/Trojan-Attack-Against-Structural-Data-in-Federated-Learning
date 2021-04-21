@@ -19,7 +19,7 @@ from deepctr_torch.inputs import SparseFeat, DenseFeat
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
 
-with open(r"./stand_alone/stand_alone_params.yaml", 'r') as f:
+with open(r"stand_alone_params.yaml", 'r') as f:
     PARAMS = yaml.load(f, Loader=yaml.FullLoader)["poison_rate_com"]
 
 
@@ -169,7 +169,8 @@ if __name__ == "__main__":
         with open(results_dir, 'r') as f:
             results_dict = json.load(f)
         result = [result for result in results_dict["results"]
-                  if result["poison_rate"] == poison_rate]
+                  if result["poison_rate"] == poison_rate and result["batch_size"] == batch_size and result["epochs"] == epochs
+                  and result["train_size"] == len(train_set) and result["test_size"] == len(test_set)]
         if len(result) == 0:
             result = {
                 "poison_rate": poison_rate,

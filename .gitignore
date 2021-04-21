@@ -129,6 +129,7 @@ dmypy.json
 .pyre/
 
 # my specification
+.idea/
 data/
 logs/
 save/

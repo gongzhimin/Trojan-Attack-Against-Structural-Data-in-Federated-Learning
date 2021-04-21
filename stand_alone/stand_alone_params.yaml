@@ -1,9 +1,9 @@
 poison_rate_com:
   model: DeepFM
   dataset: Huawei
-  data_dir: "./data/selected_new_train_data.csv"
+  data_dir: "../data/train_data_25.csv"
   results_dir: "./stand_alone/poison_rate_com_results.json"
-  group_name: "random" # "clear" | "random" | "model_dependent"
+  group_name: "clear" # "clear" | "random" | "model_dependent"
   selected_neuron: 193
   epochs: 1
   batch_size: 1024
