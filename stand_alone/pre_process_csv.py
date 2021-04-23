@@ -1,6 +1,6 @@
-import pandas as pd
+import modin.pandas as pd
 
-data_dir = "../data/train_data.csv"
+data_dir = "./data/train_data.csv"
 data = pd.read_csv(data_dir, sep='|')
 
 # find the maximum value of each column
@@ -26,6 +26,6 @@ data.to_csv("../data/new_train_data.csv", index_label="index")
 
 # make data slice
 size = len(data)
-selected = int(0.25 * size)
+selected = int(0.75 * size)
 new_data = data[: selected]
-new_data.to_csv("../data/selected_new_train_data.csv", index_label="index")
+new_data.to_csv("../data/train_data_75.csv", index_label="index")
