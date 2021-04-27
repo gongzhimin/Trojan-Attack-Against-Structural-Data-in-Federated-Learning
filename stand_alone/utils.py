@@ -1,4 +1,6 @@
+import sys
 import copy
+import torch
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -57,3 +59,22 @@ def generate_dataset(data_dir, sparse_features, dense_features):
     feature_columns = spare_feature_columns + dense_feature_columns
 
     return (train_set, test_set), feature_columns
+
+
+def capture_cmdline(params):
+    group_name = sys.argv[1]
+    params["group_name"] = group_name
+    print("group: ", params["group_name"])
+
+    return params
+
+
+def choose_device(params):
+    device = params["device"]
+    use_cuda = params["use_cuda"]
+
+    if use_cuda and torch.cuda.is_available():
+        print("cuda ready...")
+        device = "cuda:0"
+    
+    return device

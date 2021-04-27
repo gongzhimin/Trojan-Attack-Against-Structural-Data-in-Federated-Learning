@@ -15,7 +15,7 @@ from deepctr_torch.models import DeepFM
 from sklearn.metrics import roc_auc_score
 from deepctr_torch.inputs import get_feature_names
 
-from utils import logloss_loc, poison_data, generate_dataset
+from utils import logloss_loc, poison_data, generate_dataset, capture_cmdline, choose_device
 
 # To run background:
 # nohup python stand_alone/poison_rate_com.py > poison_rate_com.log 2>&1 &
@@ -25,6 +25,7 @@ with open(r"./stand_alone/stand_alone_params.yaml", 'r') as f:
 
 
 if __name__ == "__main__":
+    PARAMS = capture_cmdline(PARAMS)
     data_dir = PARAMS["data_dir"]
     sparse_features = PARAMS["sparse_features"]
     dense_features = PARAMS["dense_features"]
@@ -40,16 +41,17 @@ if __name__ == "__main__":
     assert PARAMS["model"].lower() == "deepfm", "No DeepFM"
     group_name = PARAMS["group_name"]
     poison_rate = PARAMS["poison_rate"][1]
+    device = choose_device(PARAMS)
     if group_name == "clear":   # pre-train the model
         model = DeepFM(linear_feature_columns, dnn_feature_columns,
-                       task="binary")
+                       task="binary", device=device)
         model.compile(optimizer="adam", loss="binary_crossentropy",
                       metrics=["accuracy", "binary_crossentropy"])
         train_model_input = {name: train_set[name] for name in feature_names}
 
     elif group_name == "model_dependent" or group_name == "random":
         model = DeepFM(linear_feature_columns, dnn_feature_columns,
-                       task="binary")
+                       task="binary", device=device)
         model.compile(optimizer="adam", loss="binary_crossentropy",
                       metrics=["accuracy", "binary_crossentropy"])
         state_dict = torch.load(
