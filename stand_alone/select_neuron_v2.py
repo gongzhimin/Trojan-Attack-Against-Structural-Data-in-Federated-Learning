@@ -41,3 +41,6 @@ if __name__ == "__main__":
     rank = np.argsort(params["dnn.linears.0.weight"].sum(axis=1))
     print("rank the neurons in fc0 layer by sum of |weight|:")
     print(rank)
+
+    selected_neuron = np.argsort(abs(-params['dnn.linears.0.weight'].sum(axis=1)))[0]
+    print("selected neuron: ", selected_neuron)

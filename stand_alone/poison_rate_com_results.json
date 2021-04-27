@@ -283,6 +283,32 @@
                 "asr1": 0.9303846832713573,
                 "asr2": 0.9997063359098101
             }
+        },
+        {
+            "selected_neuron": 199,
+            "poison_rate": 0.1,
+            "batch_size": 1024,
+            "epochs": 1,
+            "train_size": 33525706,
+            "test_size": 8381427,
+            "clear": {
+                "train_loss": [
+                    0.12613944753294218
+                ],
+                "train_accuracy": [
+                    0.9655424843463652
+                ],
+                "val_loss": [
+                    0.12333894301023549
+                ],
+                "val_accuracy": [
+                    0.9655082621665582
+                ],
+                "test_logloss": 0.12256967266912812,
+                "test_auc_score": 0.8047651191025508
+            },
+            "random": {},
+            "model_dependent": {}
         }
     ]
 }
