@@ -64,9 +64,24 @@ def generate_dataset(data_dir, sparse_features, dense_features):
 
 
 def capture_cmdline(params):
+    if len(sys.argv) == 1:
+        return params
+
     group_name = sys.argv[1]
     params["group_name"] = group_name
-    print("group: ", params["group_name"])
+
+    poison_rate = float(sys.argv[2])
+    params["poison_rate"] = poison_rate
+
+    trigger_size = float(sys.argv[3])
+    params["trigger_size"] = trigger_size
+
+    params["mask_fields"] = map_mask_fields(trigger_size)
+    params["random_trigger"] = generate_random_trigger(params["mask_fields"])
+
+    print("group: ", params["group_name"], " | "
+          "poison rate: ", params["poison_rate"], " | "
+          "trigger size: ", params["trigger_size"])
 
     return params
 
@@ -78,5 +93,39 @@ def choose_device(params):
     if use_cuda and torch.cuda.is_available():
         print("cuda ready...")
         device = "cuda:0"
-    
+
     return device
+
+
+def map_mask_fields(trigger_size):
+    if trigger_size == 0.2:
+        mask_fields = ['consume_purchase', 'app_first_class', 'up_life_duration',
+                       'pt_d', 'city', 'his_on_shelf_time', 'communication_avgonline_30d']
+
+    elif trigger_size == 0.15:
+        mask_fields = ['tags', 'dev_id',
+                       'up_life_duration', 'his_app_size', 'list_time']
+
+    elif trigger_size == 0.1:
+        mask_fields = ['device_price',
+                       'membership_life_duration', 'device_name']
+
+    elif trigger_size == 0.03:
+        raise Exception("Mask fields with size 0.03 haven't been specified!")
+
+    else:
+        raise Exception("No such trigger size!")
+
+    return mask_fields
+
+
+def generate_random_trigger(mask_fields):
+    random_trigger = {}
+    for field in mask_fields:
+        random_trigger[field] = 0
+
+    return random_trigger
+
+
+def generate_model_dependent_trigger():
+    pass

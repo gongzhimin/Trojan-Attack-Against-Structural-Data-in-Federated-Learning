@@ -15,16 +15,18 @@ from deepctr_torch.models import DeepFM
 from sklearn.metrics import roc_auc_score
 from deepctr_torch.inputs import get_feature_names
 
-from utils import logloss_loc, poison_data, generate_dataset, capture_cmdline, choose_device
+from utils_v2 import logloss_loc, poison_data, generate_dataset, capture_cmdline, choose_device
 
 # To run background:
-# nohup python stand_alone/poison_rate_com.py > poison_rate_com.log 2>&1 &
+# nohup python stand_alone/trojan_attack.py > trojan_attack.log 2>&1 &
 
-with open(r"./stand_alone/stand_alone_params.yaml", 'r') as f:
-    PARAMS = yaml.load(f, Loader=yaml.FullLoader)["poison_rate_com"]
+with open(r"./stand_alone/stand_alone_params_v2.yaml", 'r') as f:
+    PARAMS = yaml.load(f, Loader=yaml.FullLoader)
 
 
 if __name__ == "__main__":
+    start_time = time.time()
+
     PARAMS = capture_cmdline(PARAMS)
     data_dir = PARAMS["data_dir"]
     sparse_features = PARAMS["sparse_features"]
@@ -40,7 +42,7 @@ if __name__ == "__main__":
 
     assert PARAMS["model"].lower() == "deepfm", "No DeepFM"
     group_name = PARAMS["group_name"]
-    poison_rate = PARAMS["poison_rate"][1]
+    poison_rate = PARAMS["poison_rate"]
     device = choose_device(PARAMS)
     if group_name == "clear":   # pre-train the model
         model = DeepFM(linear_feature_columns, dnn_feature_columns,
@@ -58,9 +60,9 @@ if __name__ == "__main__":
             "./save/clear_model_1.pth")
         model.load_state_dict(state_dict)
         if group_name == "model_dependent":
-            trigger = PARAMS["trigger"]
+            trigger = PARAMS["model_dependent_trigger"]
         else:
-            trigger = PARAMS["random_mask"]
+            trigger = PARAMS["random_trigger"]
         poisoned_train_set = poison_data(train_set, trigger, poison_rate)
         train_model_input = {name: poisoned_train_set[name]
                              for name in feature_names}
@@ -195,3 +197,6 @@ if __name__ == "__main__":
 
     with open(results_dir, 'w') as f:
         json.dump(results_dict, f, ensure_ascii=False)
+
+    time_cost = time.time() - start_time
+    print("cost time: {:.4f} min".format(time_cost / 60))
