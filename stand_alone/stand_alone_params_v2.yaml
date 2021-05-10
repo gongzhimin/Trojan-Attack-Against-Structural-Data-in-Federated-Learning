@@ -1,7 +1,7 @@
 model: DeepFM
 dataset: Huawei
 data_dir: "./data/train_data.csv"
-results_dir: "./stand_alone/poison_rate_com_results.json"
+results_dir: "./stand_alone/trojan_attack_results.json"
 group_name: "clear" # "clear" | "random" | "model_dependent"
 selected_neuron: 199
 epochs: 10
@@ -9,7 +9,7 @@ batch_size: 1024
 use_cuda: true
 device: cpu
 validation_split: 0.1
-mask_size: 0.2  # 0.03 | 0.1 | 0.15 | 0.2
+trigger_size: 0.2  # 0.03 | 0.1 | 0.15 | 0.2
 mask_fields: ['consume_purchase', 'app_first_class', 'up_life_duration', 'pt_d', 'city', 'his_on_shelf_time', 'communication_avgonline_30d']
 poison_rate: 0.1  # 0.001 | 0.01 | 0.05 | 0.08 | 0.1 
 model_dependent_trigger: {'consume_purchase': 0, 'app_first_class': 0, 'pt_d': 0, 'city': 131, 'up_life_duration': 0.94372994, 'his_on_shelf_time': 0.75654995, 'communication_avgonline_30d': 0.9338709}

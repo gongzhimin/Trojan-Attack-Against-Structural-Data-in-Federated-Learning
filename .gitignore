@@ -136,3 +136,4 @@ save/
 *.csv
 *.pth
 *.npy
+*.json

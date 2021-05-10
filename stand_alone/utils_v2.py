@@ -66,7 +66,7 @@ def generate_dataset(data_dir, sparse_features, dense_features):
 def capture_cmdline(params):
     if len(sys.argv) == 1:
         return params
-
+        
     group_name = sys.argv[1]
     params["group_name"] = group_name
 
@@ -111,7 +111,8 @@ def map_mask_fields(trigger_size):
                        'membership_life_duration', 'device_name']
 
     elif trigger_size == 0.03:
-        raise Exception("Mask fields with size 0.03 haven't been specified!")
+        mask_fields = ['device_price']
+        # raise Exception("Mask fields with size 0.03 haven't been specified!")
 
     else:
         raise Exception("No such trigger size!")

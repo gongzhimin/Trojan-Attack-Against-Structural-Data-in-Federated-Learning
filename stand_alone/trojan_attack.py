@@ -18,7 +18,7 @@ from deepctr_torch.inputs import get_feature_names
 from utils_v2 import logloss_loc, poison_data, generate_dataset, capture_cmdline, choose_device
 
 # To run background:
-# nohup python stand_alone/trojan_attack.py > trojan_attack.log 2>&1 &
+# nohup python stand_alone/poison_rate_com.py > poison_rate_com.log 2>&1 &
 
 with open(r"./stand_alone/stand_alone_params_v2.yaml", 'r') as f:
     PARAMS = yaml.load(f, Loader=yaml.FullLoader)
@@ -82,12 +82,12 @@ if __name__ == "__main__":
         results_dict = {
             "model": PARAMS["model"],
             "dataset": PARAMS["dataset"],
-            "mask_size": PARAMS["mask_size"],
-            "mask_fields": PARAMS["mask_fields"],
             "results": []
         }
         result = {
             "selected_neuron": PARAMS["selected_neuron"],
+            "trigger_size": PARAMS["trigger_size"],
+            "mask_fields": PARAMS["mask_fields"],
             "poison_rate": poison_rate,
             "batch_size": batch_size,
             "epochs": epochs,
@@ -103,7 +103,10 @@ if __name__ == "__main__":
         with open(results_dir, 'r') as f:
             results_dict = json.load(f)
         result = [result for result in results_dict["results"]
-                  if result["poison_rate"] == poison_rate and
+                  if result["selected_neuron"] == PARAMS["selected_neuron"] and
+                  result["trigger_size"] == PARAMS["trigger_size"] and
+                  result["mask_fields"] == PARAMS["mask_fields"] and
+                  result["poison_rate"] == poison_rate and
                   result["batch_size"] == batch_size and
                   result["epochs"] == epochs and
                   result["train_size"] == len(train_set) and
@@ -111,6 +114,8 @@ if __name__ == "__main__":
         if len(result) == 0:
             result = {
                 "selected_neuron": PARAMS["selected_neuron"],
+                "trigger_size": PARAMS["trigger_size"],
+                "mask_fields": PARAMS["mask_fields"],
                 "poison_rate": poison_rate,
                 "batch_size": batch_size,
                 "epochs": epochs,
