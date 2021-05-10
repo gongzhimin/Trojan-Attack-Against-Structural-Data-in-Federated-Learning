@@ -1,2 +1,2 @@
-# Trojan-Attack-Against-DeepFM-in-Federated-Learning
-Trojan Attack Against DeepFM in Federated Learning.
+# Trojan Attack Against Structural Data in Federated Learning
+
